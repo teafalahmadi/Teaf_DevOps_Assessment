@@ -91,9 +91,11 @@ spec:
       steps {
         checkout scm
         container('kubectl') {
-          sh "sed -i 's|image: .*simple-java-app.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|' k8s/deployment.yaml"
+          sh "sed -i 's|^\\s*image:.*|        image: ${IMAGE_NAME}:${IMAGE_TAG}|' k8s/deployment.yaml"
           sh 'kubectl apply -f k8s/'
+          sh 'kubectl rollout restart deployment/simple-java-app'
           sh 'kubectl rollout status deployment/simple-java-app --timeout=180s'
+
         }
       }
     }
