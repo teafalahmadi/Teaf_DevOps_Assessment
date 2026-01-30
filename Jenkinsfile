@@ -26,7 +26,7 @@ spec:
       }
        steps {
           checkout scm
-          dir('simple-java-app') {
+          dir('simple-java-app/simple-java-app') {
             container('maven') {
               sh 'ls -la'
               sh 'mvn -B clean test package'
