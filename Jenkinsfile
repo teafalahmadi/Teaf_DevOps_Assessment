@@ -2,13 +2,13 @@ pipeline {
   agent none
 
   environment {
-  DOCKERHUB = credentials('dockerhub-creds')  // Username/Password credential
-  IMAGE_NAME = "${DOCKERHUB_USR}/simple-java-app"
-  IMAGE_TAG  = "${BUILD_NUMBER}"
-}
-
+    DOCKERHUB = credentials('dockerhub-creds')  // Username/Password credential
+    IMAGE_NAME = "${DOCKERHUB_USR}/simple-java-app"
+    IMAGE_TAG  = "${BUILD_NUMBER}"
+  }
 
   stages {
+
     stage('Build & Test (Maven)') {
       agent {
         kubernetes {
@@ -25,7 +25,10 @@ spec:
         }
       }
       steps {
+        checkout scm
         container('maven') {
+          sh 'ls -la'
+          sh 'test -f pom.xml'
           sh 'mvn -B clean test package'
         }
       }
@@ -41,11 +44,8 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:latest
-    args:
-    - "--dockerfile=Dockerfile"
-    - "--context=dir://workspace"
-    - "--destination=${IMAGE_NAME}:${IMAGE_TAG}"
-    - "--destination=${IMAGE_NAME}:latest"
+    command: ['cat']
+    tty: true
     volumeMounts:
     - name: docker-config
       mountPath: /kaniko/.docker
@@ -57,9 +57,17 @@ spec:
         }
       }
       steps {
+        checkout scm
         container('kaniko') {
           sh 'ls -la'
-          sh '/kaniko/executor --context $WORKSPACE --dockerfile $WORKSPACE/Dockerfile --destination $IMAGE_NAME:$IMAGE_TAG --destination $IMAGE_NAME:latest'
+          sh 'test -f Dockerfile'
+          sh """
+            /kaniko/executor \
+              --context $WORKSPACE \
+              --dockerfile $WORKSPACE/Dockerfile \
+              --destination ${IMAGE_NAME}:${IMAGE_TAG} \
+              --destination ${IMAGE_NAME}:latest
+          """
         }
       }
     }
@@ -80,8 +88,9 @@ spec:
         }
       }
       steps {
+        checkout scm
         container('kubectl') {
-          sh "sed -i 's|image: .*simple-java-app:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|' k8s/deployment.yaml"
+          sh "sed -i 's|image: .*simple-java-app.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|' k8s/deployment.yaml"
           sh 'kubectl apply -f k8s/'
           sh 'kubectl rollout status deployment/simple-java-app --timeout=180s'
         }
