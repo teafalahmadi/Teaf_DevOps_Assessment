@@ -24,15 +24,16 @@ spec:
 """
         }
       }
-      steps {
-        checkout scm
-        container('maven') {
-          sh 'ls -la'
-          sh 'test -f pom.xml'
-          sh 'mvn -B clean test package'
-        }
+       steps {
+          checkout scm
+          dir('simple-java-app') {
+            container('maven') {
+              sh 'ls -la'
+              sh 'mvn -B clean test package'
       }
     }
+  }
+}
 
     stage('Build & Push Image (Kaniko)') {
       agent {
