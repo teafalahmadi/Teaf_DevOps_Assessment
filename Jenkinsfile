@@ -2,11 +2,11 @@ pipeline {
   agent none
 
   environment {
-    DOCKERHUB_USER = credentials('dockerhub-username')   // نص
-    DOCKERHUB_PASS = credentials('dockerhub-token')      // secret token
-    IMAGE_NAME = "${DOCKERHUB_USER}/simple-java-app"
-    IMAGE_TAG  = "${BUILD_NUMBER}"
-  }
+  DOCKERHUB = credentials('dockerhub-creds')  // Username/Password credential
+  IMAGE_NAME = "${DOCKERHUB_USR}/simple-java-app"
+  IMAGE_TAG  = "${BUILD_NUMBER}"
+}
+
 
   stages {
     stage('Build & Test (Maven)') {
