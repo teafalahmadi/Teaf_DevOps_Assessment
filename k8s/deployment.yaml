@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-java-app
+  labels:
+    app: simple-java-app
+    # Label used to identify this application
+spec:
+  replicas: 2
+  # Run 2 pods for high availability
+  selector:
+    matchLabels:
+      app: simple-java-app
+      # This selector must match the pod labels below
+  template:
+    metadata:
+      labels:
+        app: simple-java-app
+        # Pod labels (must match the selector)
+    spec:
+      containers:
+        - name: simple-java-app
+          image: teaf/simple-java-app:1.0.0
+
+          imagePullPolicy: IfNotPresent
+          # Use local cached image if available; otherwise pull from registry
+
+          ports:
+            - containerPort: 8080
+              # Spring Boot app listens on 8080 inside the container
+
+          env:
+            - name: your_name
+              value: "Teaf Almalki"
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              # Checks if the app is ready to receive traffic
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              # Checks if the app is still healthy; restarts if it becomes unhealthy
+            initialDelaySeconds: 30
+            periodSeconds: 20
+

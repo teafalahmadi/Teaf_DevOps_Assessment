@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+# API version used for Ingress resources
+
+kind: Ingress
+# Defines an Ingress resource to expose the application
+
+metadata:
+  name: simple-java-app
+  # Name of the Ingress resource
+
+spec:
+  ingressClassName: nginx
+  # Use NGINX Ingress Controller to handle this Ingress
+
+  rules:
+    - host: simple-java-app.local
+      # Domain name used to access the application
+
+      http:
+        paths:
+          - path: /
+            # URL path to route traffic from
+
+            pathType: Prefix
+            # Match all paths starting with "/"
+
+            backend:
+              service:
+                name: simple-java-app-svc
+                # The Service name to forward traffic to
+
+                port:
+                  number: 80
+                  # The Service port to forward traffic to

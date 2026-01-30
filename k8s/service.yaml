@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-java-app-svc
+  labels:
+    app: simple-java-app
+    # Label for organization and selection
+spec:
+  type: ClusterIP
+  # Exposes the app inside the cluster only (Ingress will expose it externally)
+
+  selector:
+    app: simple-java-app
+    # Routes traffic to pods with this label
+
+  ports:
+    - name: http
+      port: 80
+      # Service port (what other services/Ingress will use)
+      targetPort: 8080
+      # Pod/container port where the Spring Boot app listens
+
