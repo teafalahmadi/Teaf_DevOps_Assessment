@@ -1,7 +1,5 @@
 # Teaf_DevOps_Assessment
 
-# Teaf_DevOps_Assessment
-
 Simple Java App – CI/CD on Kubernetes with Jenkins + Kaniko
 
 This repository contains a simple Spring Boot application and a complete CI/CD pipeline using **Jenkins**, **Kubernetes**, and **Kaniko** to automatically build, push, and deploy the application.
