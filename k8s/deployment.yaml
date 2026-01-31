@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: simple-java-app
-          image: teaf/simple-java-app:latest
+          image: teaf/simple-java-app:9
 
           imagePullPolicy: IfNotPresent
           # Use local cached image if available; otherwise pull from registry
